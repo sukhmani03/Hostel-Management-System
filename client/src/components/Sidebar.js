@@ -1,9 +1,9 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { clearAuth } from '../utils/auth';
+import { clearAuth, getUser } from '../utils/auth';
 
-// Navigation items for the admin sidebar
-const NAV_ITEMS = [
+// Navigation items per role
+const ADMIN_NAV_ITEMS = [
   { path: '/admin/dashboard', icon: '📊', label: 'Dashboard' },
   { path: '/admin/students',  icon: '🎓', label: 'Students' },
   { path: '/admin/rooms',     icon: '🛏️',  label: 'Rooms' },
@@ -12,8 +12,21 @@ const NAV_ITEMS = [
   { path: '/admin/attendance',icon: '✅', label: 'Attendance' },
 ];
 
+const WARDEN_NAV_ITEMS = [
+  { path: '/admin/dashboard',  icon: '📊', label: 'Dashboard' },
+  { path: '/admin/complaints', icon: '📋', label: 'Complaints' },
+  { path: '/admin/rooms',      icon: '🛏️',  label: 'Room Status' },
+  { path: '/admin/attendance', icon: '✅', label: 'Attendance' },
+  { path: '/admin/students',   icon: '🎓', label: 'Students' },
+];
+
 const Sidebar = () => {
   const navigate = useNavigate();
+  const user = getUser();
+  const role = user?.role || 'admin';
+
+  const navItems = role === 'warden' ? WARDEN_NAV_ITEMS : ADMIN_NAV_ITEMS;
+  const roleLabel = role === 'admin' ? 'Admin Panel' : 'Warden Panel';
 
   const handleLogout = () => {
     clearAuth();
@@ -28,9 +41,12 @@ const Sidebar = () => {
         <span style={styles.brandText}>HostelMS</span>
       </div>
 
+      {/* Role label */}
+      <div style={styles.roleLabel}>{roleLabel}</div>
+
       {/* Navigation Links */}
       <nav style={styles.nav}>
-        {NAV_ITEMS.map((item) => (
+        {navItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
@@ -85,6 +101,15 @@ const styles = {
     fontSize: '20px',
     fontWeight: '700',
     letterSpacing: '0.5px',
+  },
+  roleLabel: {
+    padding: '8px 20px 12px',
+    fontSize: '11px',
+    fontWeight: '700',
+    color: '#64748b',
+    textTransform: 'uppercase',
+    letterSpacing: '1px',
+    borderBottom: '1px solid rgba(255,255,255,0.08)',
   },
   nav: {
     flex: 1,

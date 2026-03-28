@@ -153,4 +153,24 @@ const getPaymentHistory = async (req, res, next) => {
   }
 };
 
-module.exports = { getAllPayments, createOrder, verifyPayment, createPayment, getPaymentHistory };
+/**
+ * @desc    Get payment history for the currently logged-in student
+ * @route   GET /api/payments/my
+ * @access  Private (student)
+ */
+const getMyPayments = async (req, res, next) => {
+  try {
+    // Find the student profile linked to this user account
+    const Student = require('../models/Student');
+    const student = await Student.findOne({ email: req.user.email });
+    if (!student) {
+      return res.status(404).json({ success: false, message: 'Student profile not found' });
+    }
+    const payments = await Payment.find({ studentId: student._id }).sort({ createdAt: -1 });
+    res.status(200).json({ success: true, data: payments });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getAllPayments, createOrder, verifyPayment, createPayment, getPaymentHistory, getMyPayments };

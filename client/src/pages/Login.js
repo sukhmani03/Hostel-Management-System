@@ -38,8 +38,8 @@ const Login = () => {
       setAuth(token, user);
       toast.success(`Welcome back, ${user.name}!`);
       // Redirect based on role
-      if (user.role === 'admin' || user.role === 'warden') {
-        navigate('/admin/dashboard');
+      if (user.role === 'student') {
+        navigate('/student/dashboard');
       } else {
         navigate('/admin/dashboard');
       }

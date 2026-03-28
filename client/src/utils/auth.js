@@ -39,3 +39,9 @@ export const isWarden = () => {
   const user = getUser();
   return user && user.role === 'warden';
 };
+
+/** Check if the current user has the "student" role */
+export const isStudent = () => {
+  const user = getUser();
+  return user && user.role === 'student';
+};

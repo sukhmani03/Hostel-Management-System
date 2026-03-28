@@ -7,12 +7,14 @@ const {
   verifyPayment,
   createPayment,
   getPaymentHistory,
+  getMyPayments,
 } = require('../controllers/paymentController');
 const { protect } = require('../middleware/authMiddleware');
 
 router.use(protect);
 
 // IMPORTANT: Specific routes must come before parameterized routes like /:id
+router.get('/my', getMyPayments);
 router.get('/history/:studentId', getPaymentHistory);
 router.post('/create-order', createOrder);
 router.post('/verify', verifyPayment);

@@ -49,6 +49,9 @@ export const studentService = {
   getAll: (search = '') =>
     api.get('/students', { params: { search } }),
 
+  getMe: () =>
+    api.get('/students/me'),
+
   getById: (id) =>
     api.get(`/students/${id}`),
 
@@ -91,6 +94,9 @@ export const paymentService = {
   getAll: () =>
     api.get('/payments'),
 
+  getMy: () =>
+    api.get('/payments/my'),
+
   create: (data) =>
     api.post('/payments', data),
 
@@ -102,6 +108,9 @@ export const paymentService = {
 export const complaintService = {
   getAll: (filters = {}) =>
     api.get('/complaints', { params: filters }),
+
+  getMy: () =>
+    api.get('/complaints/my'),
 
   getById: (id) =>
     api.get(`/complaints/${id}`),
@@ -120,6 +129,9 @@ export const complaintService = {
 export const attendanceService = {
   mark: (data) =>
     api.post('/attendance', data),
+
+  getMy: () =>
+    api.get('/attendance/my'),
 
   getAll: (date) =>
     api.get('/attendance', { params: { date } }),

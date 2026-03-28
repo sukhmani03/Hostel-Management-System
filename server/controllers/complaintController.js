@@ -104,4 +104,23 @@ const deleteComplaint = async (req, res, next) => {
   }
 };
 
-module.exports = { getAllComplaints, getComplaint, createComplaint, updateComplaint, deleteComplaint };
+/**
+ * @desc    Get complaints submitted by the currently logged-in student
+ * @route   GET /api/complaints/my
+ * @access  Private (student)
+ */
+const getMyComplaints = async (req, res, next) => {
+  try {
+    const Student = require('../models/Student');
+    const student = await Student.findOne({ email: req.user.email });
+    if (!student) {
+      return res.status(404).json({ success: false, message: 'Student profile not found' });
+    }
+    const complaints = await Complaint.find({ studentId: student._id }).sort({ createdAt: -1 });
+    res.status(200).json({ success: true, data: complaints });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getAllComplaints, getComplaint, createComplaint, updateComplaint, deleteComplaint, getMyComplaints };

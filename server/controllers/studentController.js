@@ -202,4 +202,22 @@ const generateQR = async (req, res, next) => {
   }
 };
 
-module.exports = { getAllStudents, getStudent, createStudent, updateStudent, deleteStudent, assignRoom, generateQR };
+/**
+ * @desc    Get the profile of the currently logged-in student
+ * @route   GET /api/students/me
+ * @access  Private (student)
+ */
+const getMyProfile = async (req, res, next) => {
+  try {
+    // Find student record by matching the logged-in user's email
+    const student = await Student.findOne({ email: req.user.email }).populate('roomId');
+    if (!student) {
+      return res.status(404).json({ success: false, message: 'Student profile not found. Please contact the admin.' });
+    }
+    res.status(200).json({ success: true, data: student });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getAllStudents, getStudent, createStudent, updateStudent, deleteStudent, assignRoom, generateQR, getMyProfile };
