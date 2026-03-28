@@ -1,7 +1,12 @@
 // Global error handling middleware - catches all errors passed via next(err)
 const errorHandler = (err, req, res, next) => {
-  // Use the status code set on the error, or default to 500
-  const statusCode = err.statusCode || res.statusCode === 200 ? err.statusCode || 500 : res.statusCode;
+  // Use the status code set on the error, fall back to the response status, or default to 500
+  let statusCode = 500;
+  if (err.statusCode) {
+    statusCode = err.statusCode;
+  } else if (res.statusCode && res.statusCode !== 200) {
+    statusCode = res.statusCode;
+  }
 
   // Log error details to console for debugging
   console.error(`[Error] ${err.message}`);

@@ -28,7 +28,7 @@ const DUMMY_REVENUE = [
 const DUMMY_ROOM_STATUS = [
   { name: 'Occupied', value: 46, color: '#ea4335' },
   { name: 'Available', value: 14, color: '#34a853' },
-  { name: 'Maintenance', value: 0, color: '#fbbc04' },
+  { name: 'Maintenance', value: 2, color: '#fbbc04' },
 ];
 
 // ===== Stat Card Component =====
@@ -94,10 +94,11 @@ const Dashboard = () => {
     const fetchStats = async () => {
       try {
         const res = await dashboardService.getStats();
-        const data = res.data;
+        // Backend returns { success: true, data: { stats, revenueChart, roomStatus } }
+        const data = res.data?.data || res.data || {};
         setStats(data.stats || DUMMY_STATS);
-        if (data.revenueChart) setRevenueData(data.revenueChart);
-        if (data.roomStatus) setRoomStatus(data.roomStatus);
+        if (Array.isArray(data.revenueChart)) setRevenueData(data.revenueChart);
+        if (Array.isArray(data.roomStatus)) setRoomStatus(data.roomStatus);
       } catch {
         // Use dummy data if API is not available
         setStats(DUMMY_STATS);
@@ -179,21 +180,20 @@ const Dashboard = () => {
           <ResponsiveContainer width="100%" height={240}>
             <PieChart>
               <Pie
-                data={roomStatus}
+                data={roomStatus.filter(d => d.value > 0)}
                 cx="50%"
                 cy="50%"
                 innerRadius={60}
                 outerRadius={90}
                 paddingAngle={4}
                 dataKey="value"
-                label={({ name, value }) => `${name}: ${value}`}
                 labelLine={false}
               >
-                {roomStatus.map((entry, index) => (
+                {roomStatus.filter(d => d.value > 0).map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip formatter={(v, name) => [v, name]} />
               <Legend />
             </PieChart>
           </ResponsiveContainer>

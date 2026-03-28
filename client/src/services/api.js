@@ -62,7 +62,7 @@ export const studentService = {
     api.delete(`/students/${id}`),
 
   assignRoom: (id, roomId) =>
-    api.post(`/students/${id}/assign-room`, { roomId }),
+    api.put(`/students/${id}/assign-room`, { roomId }),
 
   getQR: (id) =>
     api.get(`/students/${id}/qr`),
@@ -95,7 +95,7 @@ export const paymentService = {
     api.post('/payments', data),
 
   getHistory: (studentId) =>
-    api.get(`/payments/student/${studentId}`),
+    api.get(`/payments/history/${studentId}`),
 };
 
 // ===== Complaint Service =====

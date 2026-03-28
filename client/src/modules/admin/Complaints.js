@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { complaintService } from '../../services/api';
 
 // ===== Status tabs =====
-const TABS = ['All', 'pending', 'in-progress', 'resolved'];
+const TABS = ['All', 'pending', 'in_progress', 'resolved'];
 
 // ===== Priority badge colors =====
 const PRIORITY_COLORS = {
@@ -41,7 +41,8 @@ const ComplaintsPage = () => {
     try {
       const params = activeTab !== 'All' ? { status: activeTab } : {};
       const res = await complaintService.getAll(params);
-      setComplaints(res.data?.complaints || res.data || []);
+      const payload = res.data?.data;
+      setComplaints(Array.isArray(payload) ? payload : (payload?.complaints || []));
     } catch {
       toast.error('Failed to load complaints');
     } finally {
@@ -124,7 +125,7 @@ const ComplaintsPage = () => {
               ...(activeTab === tab ? styles.tabActive : {}),
             }}
           >
-            {tab === 'All' ? 'All' : tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab === 'All' ? 'All' : tab === 'in_progress' ? 'In Progress' : tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>

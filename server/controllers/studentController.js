@@ -131,8 +131,12 @@ const assignRoom = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Room is fully occupied' });
     }
 
+    // Remember the previous room before reassigning
+    const previousRoomId = student.roomId ? student.roomId.toString() : null;
+    const isNewRoom = previousRoomId !== roomId;
+
     // If student already had a different room, decrement that room's occupancy
-    if (student.roomId && student.roomId.toString() !== roomId) {
+    if (previousRoomId && isNewRoom) {
       await Room.findByIdAndUpdate(student.roomId, { $inc: { occupiedBeds: -1 } });
     }
 
@@ -140,20 +144,22 @@ const assignRoom = async (req, res, next) => {
     student.roomId = roomId;
     await student.save();
 
-    // Increment occupied beds in the new room
-    const updatedRoom = await Room.findByIdAndUpdate(
-      roomId,
-      { $inc: { occupiedBeds: 1 } },
-      { new: true }
-    );
+    // Only increment the new room if the student was not already in this room
+    if (isNewRoom) {
+      const updatedRoom = await Room.findByIdAndUpdate(
+        roomId,
+        { $inc: { occupiedBeds: 1 } },
+        { new: true }
+      );
 
-    // Update room status based on occupancy
-    if (updatedRoom.occupiedBeds >= updatedRoom.totalBeds) {
-      updatedRoom.status = 'occupied';
-    } else {
-      updatedRoom.status = 'available';
+      // Update room status based on occupancy
+      if (updatedRoom.occupiedBeds >= updatedRoom.totalBeds) {
+        updatedRoom.status = 'occupied';
+      } else {
+        updatedRoom.status = 'available';
+      }
+      await updatedRoom.save();
     }
-    await updatedRoom.save();
 
     res.status(200).json({ success: true, message: 'Room assigned successfully', data: student });
   } catch (error) {

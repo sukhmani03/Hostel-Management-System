@@ -25,7 +25,10 @@ const StudentsPage = () => {
   const fetchStudents = useCallback(async () => {
     try {
       const res = await studentService.getAll(search);
-      setStudents(res.data?.students || res.data || []);
+      // Backend returns { success, data: { students: [...] } } or { success, data: [...] }
+      const payload = res.data?.data;
+      const list = Array.isArray(payload) ? payload : (payload?.students || []);
+      setStudents(list);
     } catch {
       toast.error('Failed to load students');
     } finally {
@@ -63,7 +66,7 @@ const StudentsPage = () => {
       parentContact:  student.parentContact || '',
       phone:          student.phone        || '',
       rollNumber:     student.rollNumber   || '',
-      roomId:         student.room?._id   || student.room || '',
+      roomId:         student.roomId ? (typeof student.roomId === 'object' ? student.roomId._id : student.roomId) : '',
     });
     setEditId(student._id);
     setShowModal(true);

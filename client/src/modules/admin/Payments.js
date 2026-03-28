@@ -43,7 +43,8 @@ const PaymentsPage = () => {
   const fetchPayments = useCallback(async () => {
     try {
       const res = await paymentService.getAll();
-      setPayments(res.data?.payments || res.data || []);
+      const payload = res.data?.data;
+      setPayments(Array.isArray(payload) ? payload : (payload?.payments || []));
     } catch {
       toast.error('Failed to load payments');
     } finally {
@@ -54,7 +55,8 @@ const PaymentsPage = () => {
   const fetchStudents = useCallback(async () => {
     try {
       const res = await studentService.getAll();
-      setStudents(res.data?.students || res.data || []);
+      const payload = res.data?.data;
+      setStudents(Array.isArray(payload) ? payload : (payload?.students || []));
     } catch {
       // Students dropdown will be empty
     }
@@ -166,7 +168,7 @@ const PaymentsPage = () => {
                     <td style={{ color: '#94a3b8', fontSize: '12px' }}>{idx + 1}</td>
                     <td>
                       <div style={{ fontWeight: 600 }}>
-                        {payment.student?.name || payment.studentName || 'Unknown'}
+                        {payment.student?.name || 'Unknown'}
                       </div>
                       <div style={{ fontSize: '12px', color: '#94a3b8' }}>
                         {payment.student?.rollNumber || ''}

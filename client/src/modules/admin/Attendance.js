@@ -16,7 +16,8 @@ const AttendancePage = () => {
   const fetchStudents = useCallback(async () => {
     try {
       const res = await studentService.getAll();
-      const list = res.data?.students || res.data || [];
+      const payload = res.data?.data;
+      const list = Array.isArray(payload) ? payload : (payload?.students || []);
       setStudents(list);
       // Default all to 'present'
       const map = {};
@@ -34,7 +35,8 @@ const AttendancePage = () => {
     setHistLoading(true);
     try {
       const res = await attendanceService.getAll(date);
-      setHistory(res.data?.attendance || res.data || []);
+      const payload = res.data?.data;
+      setHistory(Array.isArray(payload) ? payload : (payload?.attendance || []));
     } catch {
       // History may not exist yet
       setHistory([]);

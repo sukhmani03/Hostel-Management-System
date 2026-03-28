@@ -133,7 +133,8 @@ const RoomsPage = () => {
       if (filterAC)     params.isAC   = filterAC === 'ac';
       if (filterStatus) params.status = filterStatus;
       const res = await roomService.getAll(params);
-      setRooms(res.data?.rooms || res.data || []);
+      const payload = res.data?.data;
+      setRooms(Array.isArray(payload) ? payload : (payload?.rooms || []));
     } catch {
       toast.error('Failed to load rooms');
     } finally {
