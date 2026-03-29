@@ -144,6 +144,9 @@ export const attendanceService = {
 export const dashboardService = {
   getStats: () =>
     api.get('/dashboard/stats'),
+
+  getWardenStats: () =>
+    api.get('/dashboard/warden-stats'),
 };
 
 export default api;

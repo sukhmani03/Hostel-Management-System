@@ -9,7 +9,7 @@ router.use(protect);
 router.get('/', getAllRooms);
 router.get('/:id', getRoom);
 router.post('/', authorize('admin'), createRoom);
-router.put('/:id', authorize('admin'), updateRoom);
+router.put('/:id', authorize('admin', 'warden'), updateRoom);
 router.delete('/:id', authorize('admin'), deleteRoom);
 
 module.exports = router;

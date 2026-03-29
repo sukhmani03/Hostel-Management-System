@@ -14,10 +14,10 @@ const PRIORITY_COLORS = {
 
 // ===== Status badge colors =====
 const STATUS_COLORS = {
-  pending:     { bg: '#fef3c7', color: '#92400e', label: 'Pending' },
-  in_progress: { bg: '#dbeafe', color: '#1e40af', label: 'In Progress' },
-  resolved:    { bg: '#d1fae5', color: '#065f46', label: 'Resolved' },
-  rejected:    { bg: '#fee2e2', color: '#991b1b', label: 'Rejected' },
+  pending:     { bg: '#fef3c7', color: '#92400e',  label: 'Pending' },
+  in_progress: { bg: '#dbeafe', color: '#1e40af',  label: 'In Progress' },
+  resolved:    { bg: '#d1fae5', color: '#065f46',  label: 'Resolved' },
+  rejected:    { bg: '#fee2e2', color: '#991b1b',  label: 'Rejected' },
 };
 
 const Badge = ({ text, style }) => (
@@ -34,15 +34,15 @@ const getRoomNumber = (complaint) => {
   return roomNumber ? `Room ${roomNumber}` : '—';
 };
 
-// ===== Complaints Page =====
-const ComplaintsPage = () => {
-  const [complaints, setComplaints]   = useState([]);
-  const [loading, setLoading]         = useState(true);
-  const [activeTab, setActiveTab]     = useState('All');
-  const [selected, setSelected]       = useState(null); // Complaint for detail modal
-  const [adminNote, setAdminNote]     = useState('');
-  const [newStatus, setNewStatus]     = useState('');
-  const [saving, setSaving]           = useState(false);
+// ===== Warden Complaints Page =====
+const WardenComplaints = () => {
+  const [complaints, setComplaints] = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const [activeTab, setActiveTab]   = useState('All');
+  const [selected, setSelected]     = useState(null);
+  const [adminNote, setAdminNote]   = useState('');
+  const [newStatus, setNewStatus]   = useState('');
+  const [saving, setSaving]         = useState(false);
 
   // ===== Fetch complaints =====
   const fetchComplaints = useCallback(async () => {
@@ -80,10 +80,7 @@ const ComplaintsPage = () => {
     if (!selected) return;
     setSaving(true);
     try {
-      await complaintService.update(selected._id, {
-        status: newStatus,
-        adminNote,
-      });
+      await complaintService.update(selected._id, { status: newStatus, adminNote });
       toast.success('Complaint updated!');
       closeDetail();
       fetchComplaints();
@@ -91,19 +88,6 @@ const ComplaintsPage = () => {
       toast.error('Failed to update complaint');
     } finally {
       setSaving(false);
-    }
-  };
-
-  // ===== Delete complaint =====
-  const handleDelete = async (id, e) => {
-    e.stopPropagation();
-    if (!window.confirm('Delete this complaint?')) return;
-    try {
-      await complaintService.remove(id);
-      toast.success('Complaint deleted');
-      fetchComplaints();
-    } catch {
-      toast.error('Failed to delete complaint');
     }
   };
 
@@ -128,10 +112,7 @@ const ComplaintsPage = () => {
           <button
             key={tab}
             onClick={() => { setActiveTab(tab); setLoading(true); }}
-            style={{
-              ...styles.tab,
-              ...(activeTab === tab ? styles.tabActive : {}),
-            }}
+            style={{ ...styles.tab, ...(activeTab === tab ? styles.tabActive : {}) }}
           >
             {tab === 'All' ? 'All' : tab === 'in_progress' ? 'In Progress' : tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
@@ -156,7 +137,6 @@ const ComplaintsPage = () => {
                   <th>Priority</th>
                   <th>Status</th>
                   <th>Date</th>
-                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -175,15 +155,9 @@ const ComplaintsPage = () => {
                           {complaint.description}
                         </div>
                       </td>
-                      <td>
-                        {complaint.student?.name || complaint.studentId?.name || complaint.studentName || '—'}
-                      </td>
-                      <td>
-                        {getRoomNumber(complaint)}
-                      </td>
-                      <td style={{ textTransform: 'capitalize' }}>
-                        {complaint.category || '—'}
-                      </td>
+                      <td>{complaint.student?.name || complaint.studentId?.name || complaint.studentName || '—'}</td>
+                      <td>{getRoomNumber(complaint)}</td>
+                      <td style={{ textTransform: 'capitalize' }}>{complaint.category || '—'}</td>
                       <td>
                         <Badge
                           text={complaint.priority || 'low'}
@@ -197,17 +171,7 @@ const ComplaintsPage = () => {
                         />
                       </td>
                       <td style={{ fontSize: '13px', color: '#64748b' }}>
-                        {complaint.createdAt
-                          ? new Date(complaint.createdAt).toLocaleDateString()
-                          : '—'}
-                      </td>
-                      <td>
-                        <button
-                          className="btn btn-danger btn-sm"
-                          onClick={(e) => handleDelete(complaint._id, e)}
-                        >
-                          🗑️
-                        </button>
+                        {complaint.createdAt ? new Date(complaint.createdAt).toLocaleDateString() : '—'}
                       </td>
                     </tr>
                   );
@@ -231,16 +195,10 @@ const ComplaintsPage = () => {
             <div style={styles.detailGrid}>
               <InfoRow label="Title"    value={selected.title} />
               <InfoRow label="Student"  value={selected.studentId?.name || selected.student?.name || selected.studentName || '—'} />
-              <InfoRow
-                label="Room"
-                value={getRoomNumber(selected)}
-              />
+              <InfoRow label="Room"     value={getRoomNumber(selected)} />
               <InfoRow label="Category" value={selected.category || '—'} />
               <InfoRow label="Priority" value={selected.priority || '—'} />
-              <InfoRow
-                label="Date"
-                value={selected.createdAt ? new Date(selected.createdAt).toLocaleString() : '—'}
-              />
+              <InfoRow label="Date"     value={selected.createdAt ? new Date(selected.createdAt).toLocaleString() : '—'} />
             </div>
 
             {/* Description */}
@@ -262,9 +220,9 @@ const ComplaintsPage = () => {
               </select>
             </div>
 
-            {/* Admin Note */}
+            {/* Warden Note */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginBottom: '20px' }}>
-              <label>Admin Note</label>
+              <label>Note</label>
               <textarea
                 rows={3}
                 value={adminNote}
@@ -274,9 +232,7 @@ const ComplaintsPage = () => {
             </div>
 
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-              <button className="btn btn-outline" onClick={closeDetail}>
-                Cancel
-              </button>
+              <button className="btn btn-outline" onClick={closeDetail}>Cancel</button>
               <button className="btn btn-primary" onClick={handleUpdate} disabled={saving}>
                 {saving ? 'Saving...' : 'Save Changes'}
               </button>
@@ -330,7 +286,7 @@ const styles = {
     transition: 'all 0.15s',
   },
   tabActive: {
-    background: '#1a73e8',
+    background: '#10b981',
     color: 'white',
     fontWeight: '600',
   },
@@ -341,13 +297,13 @@ const styles = {
     fontSize: '14px',
   },
   detailGrid: {
-    background: '#f8faff',
+    background: '#f0fdf4',
     borderRadius: '8px',
     padding: '14px',
     marginBottom: '16px',
   },
   descBox: {
-    background: '#f8faff',
+    background: '#f0fdf4',
     borderRadius: '8px',
     padding: '12px',
     fontSize: '13px',
@@ -356,4 +312,4 @@ const styles = {
   },
 };
 
-export default ComplaintsPage;
+export default WardenComplaints;

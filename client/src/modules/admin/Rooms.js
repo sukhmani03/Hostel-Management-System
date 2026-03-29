@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { roomService } from '../../services/api';
+import { getUser } from '../../utils/auth';
 
 // ===== Empty form template =====
 const EMPTY_FORM = {
@@ -15,7 +16,7 @@ const STATUS_COLORS = {
   maintenance: { bg: '#fef3c7', color: '#92400e', label: 'Maintenance' },
 };
 
-// ===== Room Card Component =====
+// ===== Room Card Component (Admin) =====
 const RoomCard = ({ room, onEdit, onDelete }) => {
   const status = STATUS_COLORS[room.status] || STATUS_COLORS.available;
   return (
@@ -49,6 +50,75 @@ const RoomCard = ({ room, onEdit, onDelete }) => {
           🗑️ Delete
         </button>
       </div>
+    </div>
+  );
+};
+
+// ===== Room Card Component (Warden - status update only) =====
+const WardenRoomCard = ({ room, onRefresh }) => {
+  const [status, setStatus] = useState(room.status || 'available');
+  const [saving, setSaving] = useState(false);
+  const current = STATUS_COLORS[status] || STATUS_COLORS.available;
+
+  const handleStatusUpdate = async () => {
+    setSaving(true);
+    try {
+      await roomService.update(room._id, { status });
+      toast.success(`Room ${room.roomNumber} status updated to ${current.label}`);
+      onRefresh();
+    } catch {
+      toast.error('Failed to update room status');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div style={cardStyles.card}>
+      {/* Room number & current status badge */}
+      <div style={cardStyles.top}>
+        <span style={cardStyles.roomNo}>Room {room.roomNumber}</span>
+        <span style={{ ...cardStyles.badge, background: current.bg, color: current.color }}>
+          {current.label}
+        </span>
+      </div>
+
+      {/* Details */}
+      <div style={cardStyles.details}>
+        <Detail icon="🏢" label={`Floor ${room.floor}`} />
+        <Detail icon="🛏️" label={`${room.totalBeds} Bed${room.totalBeds !== 1 ? 's' : ''} (${room.type})`} />
+        <Detail icon="❄️" label={room.isAC ? 'AC' : 'Non-AC'} />
+      </div>
+
+      {room.description && (
+        <p style={cardStyles.desc}>{room.description}</p>
+      )}
+
+      {/* Status Update Controls */}
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' }}>
+        <select
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+          style={{ flex: 1, fontSize: '13px' }}
+        >
+          <option value="available">Available</option>
+          <option value="occupied">Occupied</option>
+          <option value="maintenance">Maintenance</option>
+        </select>
+        <button
+          className="btn btn-primary btn-sm"
+          onClick={handleStatusUpdate}
+          disabled={saving || status === room.status}
+          title={status === room.status ? 'Change status to enable update' : 'Save new room status'}
+        >
+          {saving ? '...' : 'Update'}
+        </button>
+      </div>
+      {status === room.status && (
+        <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0 }}>
+          Select a different status to update.
+        </p>
+      )}
     </div>
   );
 };
@@ -113,6 +183,9 @@ const cardStyles = {
 
 // ===== Main Rooms Page =====
 const RoomsPage = () => {
+  const user = getUser();
+  const isWarden = user?.role === 'warden';
+
   const [rooms, setRooms]         = useState([]);
   const [loading, setLoading]     = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -215,10 +288,12 @@ const RoomsPage = () => {
     <div>
       {/* Header */}
       <div style={styles.header}>
-        <h2 style={styles.pageTitle}>🛏️ Rooms</h2>
-        <button className="btn btn-primary" onClick={openAdd}>
-          ➕ Add Room
-        </button>
+        <h2 style={styles.pageTitle}>🛏️ {isWarden ? 'Room Status' : 'Rooms'}</h2>
+        {!isWarden && (
+          <button className="btn btn-primary" onClick={openAdd}>
+            ➕ Add Room
+          </button>
+        )}
       </div>
 
       {/* Filter Bar */}
@@ -253,23 +328,31 @@ const RoomsPage = () => {
         <div className="spinner" />
       ) : rooms.length === 0 ? (
         <div className="card" style={styles.empty}>
-          No rooms found. Add a room to get started!
+          No rooms found.{!isWarden && ' Add a room to get started!'}
         </div>
       ) : (
         <div style={styles.grid}>
-          {rooms.map((room) => (
-            <RoomCard
-              key={room._id}
-              room={room}
-              onEdit={openEdit}
-              onDelete={handleDelete}
-            />
-          ))}
+          {rooms.map((room) =>
+            isWarden ? (
+              <WardenRoomCard
+                key={room._id}
+                room={room}
+                onRefresh={fetchRooms}
+              />
+            ) : (
+              <RoomCard
+                key={room._id}
+                room={room}
+                onEdit={openEdit}
+                onDelete={handleDelete}
+              />
+            )
+          )}
         </div>
       )}
 
-      {/* ===== Add / Edit Modal ===== */}
-      {showModal && (
+      {/* ===== Add / Edit Modal (admin only) ===== */}
+      {showModal && !isWarden && (
         <div className="modal-overlay">
           <div className="modal" style={{ maxWidth: '540px' }}>
             <div className="modal-header">

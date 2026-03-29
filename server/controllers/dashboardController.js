@@ -67,4 +67,63 @@ const getDashboardStats = async (req, res, next) => {
   }
 };
 
-module.exports = { getDashboardStats };
+/**
+ * @desc    Get warden-specific dashboard statistics
+ * @route   GET /api/dashboard/warden-stats
+ * @access  Private (warden)
+ */
+const getWardenStats = async (req, res, next) => {
+  try {
+    const [
+      pendingComplaints,
+      inProgressComplaints,
+      resolvedComplaints,
+      availableRooms,
+      occupiedRooms,
+      maintenanceRooms,
+      totalStudents,
+    ] = await Promise.all([
+      Complaint.countDocuments({ status: 'pending' }),
+      Complaint.countDocuments({ status: 'in_progress' }),
+      Complaint.countDocuments({ status: 'resolved' }),
+      Room.countDocuments({ status: 'available' }),
+      Room.countDocuments({ status: 'occupied' }),
+      Room.countDocuments({ status: 'maintenance' }),
+      Student.countDocuments(),
+    ]);
+
+    // Fetch 5 most recent unresolved complaints with student + room info
+    const recentComplaints = await Complaint.find({ status: { $in: ['pending', 'in_progress'] } })
+      .populate({
+        path: 'studentId',
+        select: 'name roomId',
+        populate: { path: 'roomId', select: 'roomNumber' },
+      })
+      .sort({ createdAt: -1 })
+      .limit(5);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        complaints: {
+          pending: pendingComplaints,
+          inProgress: inProgressComplaints,
+          resolved: resolvedComplaints,
+          total: pendingComplaints + inProgressComplaints + resolvedComplaints,
+        },
+        rooms: {
+          available: availableRooms,
+          occupied: occupiedRooms,
+          maintenance: maintenanceRooms,
+          total: availableRooms + occupiedRooms + maintenanceRooms,
+        },
+        totalStudents,
+        recentComplaints,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getDashboardStats, getWardenStats };
