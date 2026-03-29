@@ -1,5 +1,6 @@
 // Attendance controller - mark and retrieve student attendance records
 const Attendance = require('../models/Attendance');
+const Student = require('../models/Student');
 
 /**
  * @desc    Mark attendance for a student
@@ -96,4 +97,35 @@ const getStudentAttendanceHistory = async (req, res, next) => {
   }
 };
 
-module.exports = { markAttendance, getAttendance, getStudentAttendanceHistory };
+/**
+ * @desc    Get attendance history for the currently logged-in student
+ * @route   GET /api/attendance/my
+ * @access  Private (student)
+ */
+const getMyAttendance = async (req, res, next) => {
+  try {
+    const student = await Student.findOne({ email: req.user.email });
+    if (!student) {
+      return res.status(404).json({ success: false, message: 'Student profile not found' });
+    }
+
+    const attendance = await Attendance.find({ studentId: student._id }).sort({ date: -1 });
+
+    const total = attendance.length;
+    const present = attendance.filter((a) => a.status === 'present').length;
+    const absent = total - present;
+    const percentage = total > 0 ? ((present / total) * 100).toFixed(2) : 0;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        records: attendance,
+        summary: { total, present, absent, percentage },
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { markAttendance, getAttendance, getStudentAttendanceHistory, getMyAttendance };
