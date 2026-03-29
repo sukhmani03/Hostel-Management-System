@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "PKief.material-icon-theme",
+    "mongodb.mongodb-vscode",
+    "humao.rest-client",
+    "formulahendry.auto-rename-tag",
+    "dsznajder.es7-react-js-snippets",
+    "christian-kohler.path-intellisense",
+    "mikestead.dotenv",
+    "eamodio.gitlens"
+  ]
+}
