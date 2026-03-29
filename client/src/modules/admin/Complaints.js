@@ -14,10 +14,10 @@ const PRIORITY_COLORS = {
 
 // ===== Status badge colors =====
 const STATUS_COLORS = {
-  pending:      { bg: '#fef3c7', color: '#92400e', label: 'Pending' },
-  'in-progress':{ bg: '#dbeafe', color: '#1e40af', label: 'In Progress' },
-  resolved:     { bg: '#d1fae5', color: '#065f46', label: 'Resolved' },
-  rejected:     { bg: '#fee2e2', color: '#991b1b', label: 'Rejected' },
+  pending:     { bg: '#fef3c7', color: '#92400e', label: 'Pending' },
+  in_progress: { bg: '#dbeafe', color: '#1e40af', label: 'In Progress' },
+  resolved:    { bg: '#d1fae5', color: '#065f46', label: 'Resolved' },
+  rejected:    { bg: '#fee2e2', color: '#991b1b', label: 'Rejected' },
 };
 
 const Badge = ({ text, style }) => (
@@ -25,6 +25,14 @@ const Badge = ({ text, style }) => (
     {text}
   </span>
 );
+
+// ===== Helper: extract room number from a populated complaint =====
+const getRoomNumber = (complaint) => {
+  const roomNumber =
+    complaint.studentId?.roomId?.roomNumber ||
+    complaint.student?.roomId?.roomNumber;
+  return roomNumber ? `Room ${roomNumber}` : '—';
+};
 
 // ===== Complaints Page =====
 const ComplaintsPage = () => {
@@ -143,6 +151,7 @@ const ComplaintsPage = () => {
                 <tr>
                   <th>Title</th>
                   <th>Student</th>
+                  <th>Room</th>
                   <th>Category</th>
                   <th>Priority</th>
                   <th>Status</th>
@@ -167,7 +176,10 @@ const ComplaintsPage = () => {
                         </div>
                       </td>
                       <td>
-                        {complaint.student?.name || complaint.studentName || '—'}
+                        {complaint.student?.name || complaint.studentId?.name || complaint.studentName || '—'}
+                      </td>
+                      <td>
+                        {getRoomNumber(complaint)}
                       </td>
                       <td style={{ textTransform: 'capitalize' }}>
                         {complaint.category || '—'}
@@ -218,7 +230,11 @@ const ComplaintsPage = () => {
             {/* Complaint Info */}
             <div style={styles.detailGrid}>
               <InfoRow label="Title"    value={selected.title} />
-              <InfoRow label="Student"  value={selected.student?.name || selected.studentName || '—'} />
+              <InfoRow label="Student"  value={selected.studentId?.name || selected.student?.name || selected.studentName || '—'} />
+              <InfoRow
+                label="Room"
+                value={getRoomNumber(selected)}
+              />
               <InfoRow label="Category" value={selected.category || '—'} />
               <InfoRow label="Priority" value={selected.priority || '—'} />
               <InfoRow
@@ -240,7 +256,7 @@ const ComplaintsPage = () => {
               <label>Update Status</label>
               <select value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
                 <option value="pending">Pending</option>
-                <option value="in-progress">In Progress</option>
+                <option value="in_progress">In Progress</option>
                 <option value="resolved">Resolved</option>
                 <option value="rejected">Rejected</option>
               </select>

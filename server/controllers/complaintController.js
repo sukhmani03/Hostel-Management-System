@@ -18,7 +18,11 @@ const getAllComplaints = async (req, res, next) => {
     if (priority) filter.priority = priority;
 
     const complaints = await Complaint.find(filter)
-      .populate('studentId', 'name email rollNumber')
+      .populate({
+        path: 'studentId',
+        select: 'name email rollNumber roomId',
+        populate: { path: 'roomId', select: 'roomNumber' },
+      })
       .sort({ createdAt: -1 });
 
     res.status(200).json({ success: true, data: complaints });
