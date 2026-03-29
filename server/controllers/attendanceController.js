@@ -1,5 +1,6 @@
 // Attendance controller - mark and retrieve student attendance records
 const Attendance = require('../models/Attendance');
+const Student = require('../models/Student');
 
 /**
  * @desc    Mark attendance for a student
@@ -103,7 +104,6 @@ const getStudentAttendanceHistory = async (req, res, next) => {
  */
 const getMyAttendance = async (req, res, next) => {
   try {
-    const Student = require('../models/Student');
     const student = await Student.findOne({ email: req.user.email });
     if (!student) {
       return res.status(404).json({ success: false, message: 'Student profile not found' });

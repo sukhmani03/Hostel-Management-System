@@ -1,5 +1,6 @@
 // Complaint controller - manage student complaints and their resolution
 const Complaint = require('../models/Complaint');
+const Student = require('../models/Student');
 
 /**
  * @desc    Get all complaints with optional filters
@@ -111,7 +112,6 @@ const deleteComplaint = async (req, res, next) => {
  */
 const getMyComplaints = async (req, res, next) => {
   try {
-    const Student = require('../models/Student');
     const student = await Student.findOne({ email: req.user.email });
     if (!student) {
       return res.status(404).json({ success: false, message: 'Student profile not found' });

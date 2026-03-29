@@ -1,6 +1,7 @@
 // Payment controller - handles fee payments with Razorpay integration
 const crypto = require('crypto'); // Built-in Node.js module for signature verification
 const Payment = require('../models/Payment');
+const Student = require('../models/Student');
 
 // Conditionally initialize Razorpay only if credentials are available
 let razorpay = null;
@@ -161,7 +162,6 @@ const getPaymentHistory = async (req, res, next) => {
 const getMyPayments = async (req, res, next) => {
   try {
     // Find the student profile linked to this user account
-    const Student = require('../models/Student');
     const student = await Student.findOne({ email: req.user.email });
     if (!student) {
       return res.status(404).json({ success: false, message: 'Student profile not found' });
