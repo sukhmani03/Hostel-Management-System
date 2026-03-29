@@ -1,8 +1,8 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { clearAuth, getUser } from '../utils/auth';
+import { clearAuth } from '../utils/auth';
 
-// Navigation items per role
+// Navigation items for the admin panel
 const ADMIN_NAV_ITEMS = [
   { path: '/admin/dashboard', icon: '📊', label: 'Dashboard' },
   { path: '/admin/students',  icon: '🎓', label: 'Students' },
@@ -12,21 +12,8 @@ const ADMIN_NAV_ITEMS = [
   { path: '/admin/attendance',icon: '✅', label: 'Attendance' },
 ];
 
-const WARDEN_NAV_ITEMS = [
-  { path: '/admin/warden-dashboard', icon: '📊', label: 'Dashboard' },
-  { path: '/admin/complaints',       icon: '📋', label: 'Complaints' },
-  { path: '/admin/rooms',            icon: '🛏️',  label: 'Room Status' },
-  { path: '/admin/attendance',       icon: '✅', label: 'Attendance' },
-  { path: '/admin/students',         icon: '🎓', label: 'Students' },
-];
-
 const Sidebar = () => {
   const navigate = useNavigate();
-  const user = getUser();
-  const role = user?.role || 'admin';
-
-  const navItems = role === 'warden' ? WARDEN_NAV_ITEMS : ADMIN_NAV_ITEMS;
-  const roleLabel = role === 'admin' ? 'Admin Panel' : 'Warden Panel';
 
   const handleLogout = () => {
     clearAuth();
@@ -42,11 +29,11 @@ const Sidebar = () => {
       </div>
 
       {/* Role label */}
-      <div style={styles.roleLabel}>{roleLabel}</div>
+      <div style={styles.roleLabel}>Admin Panel</div>
 
       {/* Navigation Links */}
       <nav style={styles.nav}>
-        {navItems.map((item) => (
+        {ADMIN_NAV_ITEMS.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}

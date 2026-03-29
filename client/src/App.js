@@ -3,18 +3,24 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminLayout from './components/AdminLayout';
+import WardenLayout from './components/WardenLayout';
 import StudentLayout from './components/StudentLayout';
 
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 
 import Dashboard from './modules/admin/Dashboard';
-import WardenDashboard from './modules/admin/WardenDashboard';
 import StudentsPage from './modules/admin/Students';
 import RoomsPage from './modules/admin/Rooms';
 import PaymentsPage from './modules/admin/Payments';
 import ComplaintsPage from './modules/admin/Complaints';
 import AttendancePage from './modules/admin/Attendance';
+
+import WardenDashboard from './modules/warden/WardenDashboard';
+import WardenComplaints from './modules/warden/WardenComplaints';
+import WardenRooms from './modules/warden/WardenRooms';
+import WardenStudents from './modules/warden/WardenStudents';
+import WardenAttendance from './modules/warden/WardenAttendance';
 
 import StudentDashboard from './modules/student/StudentDashboard';
 import MyRoom from './modules/student/MyRoom';
@@ -32,7 +38,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* Protected Admin/Warden Routes - wrapped in AdminLayout */}
+        {/* Protected Admin Routes */}
         <Route
           path="/admin"
           element={
@@ -41,8 +47,7 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="dashboard"           element={<Dashboard />} />
-          <Route path="warden-dashboard"    element={<WardenDashboard />} />
+          <Route path="dashboard"  element={<Dashboard />} />
           <Route path="students"   element={<StudentsPage />} />
           <Route path="rooms"      element={<RoomsPage />} />
           <Route path="payments"   element={<PaymentsPage />} />
@@ -50,7 +55,23 @@ function App() {
           <Route path="attendance" element={<AttendancePage />} />
         </Route>
 
-        {/* Protected Student Routes - wrapped in StudentLayout */}
+        {/* Protected Warden Routes */}
+        <Route
+          path="/warden"
+          element={
+            <ProtectedRoute>
+              <WardenLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="dashboard"  element={<WardenDashboard />} />
+          <Route path="complaints" element={<WardenComplaints />} />
+          <Route path="rooms"      element={<WardenRooms />} />
+          <Route path="students"   element={<WardenStudents />} />
+          <Route path="attendance" element={<WardenAttendance />} />
+        </Route>
+
+        {/* Protected Student Routes */}
         <Route
           path="/student"
           element={
@@ -75,3 +96,4 @@ function App() {
 }
 
 export default App;
+

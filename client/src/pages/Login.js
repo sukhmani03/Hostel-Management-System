@@ -41,7 +41,7 @@ const Login = () => {
       if (user.role === 'student') {
         navigate('/student/dashboard');
       } else if (user.role === 'warden') {
-        navigate('/admin/warden-dashboard');
+        navigate('/warden/dashboard');
       } else {
         navigate('/admin/dashboard');
       }
