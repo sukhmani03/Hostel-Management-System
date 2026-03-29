@@ -202,4 +202,21 @@ const generateQR = async (req, res, next) => {
   }
 };
 
-module.exports = { getAllStudents, getStudent, createStudent, updateStudent, deleteStudent, assignRoom, generateQR };
+/**
+ * @desc    Get the student profile linked to the currently authenticated user
+ * @route   GET /api/students/me
+ * @access  Private (student)
+ */
+const getMyStudentProfile = async (req, res, next) => {
+  try {
+    const student = await Student.findOne({ userId: req.user._id }).populate('roomId');
+    if (!student) {
+      return res.status(404).json({ success: false, message: 'Student profile not found. Please contact admin.' });
+    }
+    res.status(200).json({ success: true, data: student });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getAllStudents, getStudent, createStudent, updateStudent, deleteStudent, assignRoom, generateQR, getMyStudentProfile };

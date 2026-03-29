@@ -9,11 +9,15 @@ const {
   deleteStudent,
   assignRoom,
   generateQR,
+  getMyStudentProfile,
 } = require('../controllers/studentController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
 // All student routes require authentication
 router.use(protect);
+
+// /me must come before /:id to avoid being matched as an ID param
+router.get('/me', authorize('student'), getMyStudentProfile);
 
 router.get('/', authorize('admin', 'warden'), getAllStudents);
 router.get('/:id', getStudent);

@@ -52,6 +52,9 @@ export const studentService = {
   getById: (id) =>
     api.get(`/students/${id}`),
 
+  getMyProfile: () =>
+    api.get('/students/me'),
+
   create: (data) =>
     api.post('/students', data),
 
@@ -96,6 +99,12 @@ export const paymentService = {
 
   getHistory: (studentId) =>
     api.get(`/payments/history/${studentId}`),
+
+  createOrder: (data) =>
+    api.post('/payments/create-order', data),
+
+  verifyPayment: (data) =>
+    api.post('/payments/verify', data),
 };
 
 // ===== Complaint Service =====
