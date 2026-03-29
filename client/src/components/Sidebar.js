@@ -13,11 +13,11 @@ const ADMIN_NAV_ITEMS = [
 ];
 
 const WARDEN_NAV_ITEMS = [
-  { path: '/admin/dashboard',  icon: '📊', label: 'Dashboard' },
-  { path: '/admin/complaints', icon: '📋', label: 'Complaints' },
-  { path: '/admin/rooms',      icon: '🛏️',  label: 'Room Status' },
-  { path: '/admin/attendance', icon: '✅', label: 'Attendance' },
-  { path: '/admin/students',   icon: '🎓', label: 'Students' },
+  { path: '/admin/warden-dashboard', icon: '📊', label: 'Dashboard' },
+  { path: '/admin/complaints',       icon: '📋', label: 'Complaints' },
+  { path: '/admin/rooms',            icon: '🛏️',  label: 'Room Status' },
+  { path: '/admin/attendance',       icon: '✅', label: 'Attendance' },
+  { path: '/admin/students',         icon: '🎓', label: 'Students' },
 ];
 
 const Sidebar = () => {

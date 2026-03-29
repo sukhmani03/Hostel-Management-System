@@ -5,12 +5,13 @@ import Navbar from './Navbar';
 
 // Map URL paths to human-readable page titles
 const PAGE_TITLES = {
-  '/admin/dashboard':  'Dashboard',
-  '/admin/students':   'Students',
-  '/admin/rooms':      'Rooms',
-  '/admin/payments':   'Payments',
-  '/admin/complaints': 'Complaints',
-  '/admin/attendance': 'Attendance',
+  '/admin/dashboard':          'Dashboard',
+  '/admin/warden-dashboard':   'Warden Dashboard',
+  '/admin/students':           'Students',
+  '/admin/rooms':              'Rooms',
+  '/admin/payments':           'Payments',
+  '/admin/complaints':         'Complaints',
+  '/admin/attendance':         'Attendance',
 };
 
 /**

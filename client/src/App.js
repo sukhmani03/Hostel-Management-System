@@ -9,6 +9,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 
 import Dashboard from './modules/admin/Dashboard';
+import WardenDashboard from './modules/admin/WardenDashboard';
 import StudentsPage from './modules/admin/Students';
 import RoomsPage from './modules/admin/Rooms';
 import PaymentsPage from './modules/admin/Payments';
@@ -40,7 +41,8 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="dashboard"  element={<Dashboard />} />
+          <Route path="dashboard"           element={<Dashboard />} />
+          <Route path="warden-dashboard"    element={<WardenDashboard />} />
           <Route path="students"   element={<StudentsPage />} />
           <Route path="rooms"      element={<RoomsPage />} />
           <Route path="payments"   element={<PaymentsPage />} />
