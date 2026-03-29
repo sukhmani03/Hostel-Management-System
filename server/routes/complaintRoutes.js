@@ -15,10 +15,10 @@ router.use(protect);
 
 // IMPORTANT: /my must come before /:id to avoid being matched as a complaint ID
 router.get('/my', getMyComplaints);
-router.get('/', getAllComplaints);
+router.get('/', authorize('admin', 'warden'), getAllComplaints);
 router.get('/:id', getComplaint);
 router.post('/', createComplaint);
 router.put('/:id', authorize('admin', 'warden'), updateComplaint);
-router.delete('/:id', deleteComplaint);
+router.delete('/:id', authorize('admin'), deleteComplaint);
 
 module.exports = router;
