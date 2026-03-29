@@ -27,7 +27,10 @@ pids
 Thumbs.db
 
 # Editor
-.vscode/
+.vscode/*
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/settings.json
 .idea/
 
 # Package locks (keep for reproducibility, but ignore if desired)
