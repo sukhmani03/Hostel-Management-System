@@ -5,17 +5,15 @@ import Navbar from './Navbar';
 
 // Navigation items for the warden portal
 const WARDEN_NAV_ITEMS = [
-  { path: '/warden/dashboard',   icon: '📊', label: 'Dashboard' },
-  { path: '/warden/complaints',  icon: '📋', label: 'Complaints' },
-  { path: '/warden/rooms',       icon: '🛏️',  label: 'Room Status' },
-  { path: '/warden/students',    icon: '🎓', label: 'Students' },
-  { path: '/warden/attendance',  icon: '✅', label: 'Attendance' },
+  { path: '/warden/dashboard',  icon: '📊', label: 'Dashboard' },
+  { path: '/warden/rooms',      icon: '🛏️',  label: 'Room Status' },
+  { path: '/warden/students',   icon: '🎓', label: 'Students' },
+  { path: '/warden/attendance', icon: '✅', label: 'Attendance' },
 ];
 
 // Map URL paths to human-readable page titles
 const PAGE_TITLES = {
   '/warden/dashboard':  'Warden Dashboard',
-  '/warden/complaints': 'Complaints',
   '/warden/rooms':      'Room Status',
   '/warden/students':   'Students',
   '/warden/attendance': 'Attendance',

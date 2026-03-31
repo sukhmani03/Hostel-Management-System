@@ -15,7 +15,6 @@ const Login = () => {
   const [form, setForm] = useState({
     email: '',
     password: '',
-    role: 'admin',
   });
   const [loading, setLoading] = useState(false);
 
@@ -55,7 +54,7 @@ const Login = () => {
 
   // Fill demo credentials quickly
   const fillDemo = () => {
-    setForm({ email: 'admin@hostel.com', password: 'admin123', role: 'admin' });
+    setForm({ email: 'admin@hostel.com', password: 'admin123' });
   };
 
   return (
@@ -105,20 +104,6 @@ const Login = () => {
               placeholder="Enter your password"
               autoComplete="current-password"
             />
-          </div>
-
-          <div style={styles.field}>
-            <label htmlFor="role">Sign in as</label>
-            <select
-              id="role"
-              name="role"
-              value={form.role}
-              onChange={handleChange}
-            >
-              <option value="admin">Admin</option>
-              <option value="warden">Warden</option>
-              <option value="student">Student</option>
-            </select>
           </div>
 
           <button

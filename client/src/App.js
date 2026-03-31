@@ -17,7 +17,6 @@ import ComplaintsPage from './modules/admin/Complaints';
 import AttendancePage from './modules/admin/Attendance';
 
 import WardenDashboard from './modules/warden/WardenDashboard';
-import WardenComplaints from './modules/warden/WardenComplaints';
 import WardenRooms from './modules/warden/WardenRooms';
 import WardenStudents from './modules/warden/WardenStudents';
 import WardenAttendance from './modules/warden/WardenAttendance';
@@ -65,7 +64,6 @@ function App() {
           }
         >
           <Route path="dashboard"  element={<WardenDashboard />} />
-          <Route path="complaints" element={<WardenComplaints />} />
           <Route path="rooms"      element={<WardenRooms />} />
           <Route path="students"   element={<WardenStudents />} />
           <Route path="attendance" element={<WardenAttendance />} />

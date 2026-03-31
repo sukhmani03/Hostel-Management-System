@@ -14,7 +14,6 @@ const Signup = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'admin',
   });
   const [loading, setLoading] = useState(false);
 
@@ -41,7 +40,7 @@ const Signup = () => {
 
     setLoading(true);
     try {
-      await authService.register(form.name, form.email, form.password, form.role);
+      await authService.register(form.name, form.email, form.password, 'student');
       toast.success('Account created! Please sign in.');
       navigate('/login');
     } catch (err) {
@@ -59,7 +58,7 @@ const Signup = () => {
         <div style={styles.header}>
           <div style={styles.logo}>🏠</div>
           <h1 style={styles.title}>Create Account</h1>
-          <p style={styles.subtitle}>Join the Hostel Management System</p>
+          <p style={styles.subtitle}>Create a student account</p>
         </div>
 
         {/* Signup Form */}
@@ -86,20 +85,6 @@ const Signup = () => {
               onChange={handleChange}
               placeholder="john@example.com"
             />
-          </div>
-
-          <div style={styles.field}>
-            <label htmlFor="role">Role</label>
-            <select
-              id="role"
-              name="role"
-              value={form.role}
-              onChange={handleChange}
-            >
-              <option value="admin">Admin</option>
-              <option value="warden">Warden</option>
-              <option value="student">Student</option>
-            </select>
           </div>
 
           <div style={styles.field}>

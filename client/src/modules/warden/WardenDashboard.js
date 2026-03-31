@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer,
-  BarChart, Bar, XAxis, YAxis, CartesianGrid,
 } from 'recharts';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -10,17 +9,8 @@ import { getUser } from '../../utils/auth';
 
 // ===== Fallback dummy data =====
 const DUMMY = {
-  complaints: { pending: 4, inProgress: 2, resolved: 18, total: 24 },
-  rooms:      { available: 14, occupied: 38, maintenance: 3, total: 55 },
+  rooms:         { available: 14, occupied: 38, maintenance: 3, total: 55 },
   totalStudents: 52,
-  recentComplaints: [],
-};
-
-// ===== Status badge colours =====
-const STATUS_COLORS = {
-  pending:     { bg: '#fef3c7', color: '#92400e', label: 'Pending' },
-  in_progress: { bg: '#dbeafe', color: '#1e40af', label: 'In Progress' },
-  resolved:    { bg: '#d1fae5', color: '#065f46', label: 'Resolved' },
 };
 
 // ===== Small reusable stat card =====
@@ -91,24 +81,6 @@ const QuickLink = ({ icon, label, to, color }) => {
   );
 };
 
-// ===== Badge component =====
-const Badge = ({ status }) => {
-  const s = STATUS_COLORS[status] || STATUS_COLORS.pending;
-  return (
-    <span style={{
-      padding: '2px 9px',
-      borderRadius: '999px',
-      fontSize: '11px',
-      fontWeight: '600',
-      textTransform: 'uppercase',
-      background: s.bg,
-      color: s.color,
-    }}>
-      {s.label}
-    </span>
-  );
-};
-
 // ===== Main Warden Dashboard =====
 const WardenDashboard = () => {
   const user = getUser();
@@ -139,26 +111,13 @@ const WardenDashboard = () => {
   }
 
   const d = data || DUMMY;
-  const c = d.complaints || DUMMY.complaints;
-  const r = d.rooms      || DUMMY.rooms;
-
-  const complaintChartData = [
-    { name: 'Pending',     value: c.pending,    color: '#fbbc04' },
-    { name: 'In Progress', value: c.inProgress,  color: '#1a73e8' },
-    { name: 'Resolved',    value: c.resolved,    color: '#34a853' },
-  ].filter(item => item.value > 0);
+  const r = d.rooms || DUMMY.rooms;
 
   const roomChartData = [
     { name: 'Available',   value: r.available,   color: '#34a853' },
-    { name: 'Occupied',    value: r.occupied,     color: '#ea4335' },
-    { name: 'Maintenance', value: r.maintenance,  color: '#fbbc04' },
+    { name: 'Occupied',    value: r.occupied,    color: '#ea4335' },
+    { name: 'Maintenance', value: r.maintenance, color: '#fbbc04' },
   ].filter(item => item.value > 0);
-
-  const barData = [
-    { label: 'Pending',     count: c.pending },
-    { label: 'In Progress', count: c.inProgress },
-    { label: 'Resolved',    count: c.resolved },
-  ];
 
   return (
     <div style={styles.page}>
@@ -172,59 +131,31 @@ const WardenDashboard = () => {
         <span style={styles.bannerBadge}>Warden Panel</span>
       </div>
 
-      {/* ===== Top Stat Cards ===== */}
+      {/* ===== Top Stat Card ===== */}
       <div style={styles.statsGrid}>
-        <StatCard icon="⏳" label="Pending Complaints"   value={c.pending}       color="#fbbc04" sub="Awaiting action" />
-        <StatCard icon="🔄" label="In Progress"          value={c.inProgress}    color="#1a73e8" sub="Being resolved" />
-        <StatCard icon="✅" label="Resolved Complaints"  value={c.resolved}      color="#34a853" sub="Closed" />
-        <StatCard icon="🎓" label="Total Students"       value={d.totalStudents} color="#8b5cf6" sub="Enrolled" />
+        <StatCard icon="🎓" label="Total Students" value={d.totalStudents || 0} color="#8b5cf6" sub="Enrolled" />
       </div>
 
       {/* ===== Room Status Cards ===== */}
       <div style={styles.sectionTitle}>🏠 Room Status Overview</div>
       <div style={styles.roomGrid}>
-        <StatCard icon="🟢" label="Available Rooms"   value={r.available}   color="#34a853" sub={`of ${r.total} total`} />
+        <StatCard icon="🟢" label="Available Rooms"   value={r.available}   color="#34a853" sub={`of ${r.total || 0} total`} />
         <StatCard icon="🔴" label="Occupied Rooms"    value={r.occupied}    color="#ea4335" sub={`${r.total ? Math.round((r.occupied / r.total) * 100) : 0}% occupancy`} />
         <StatCard icon="🟡" label="Under Maintenance" value={r.maintenance} color="#fbbc04" sub="Temporarily unavailable" />
       </div>
 
-      {/* ===== Charts Row ===== */}
-      <div style={styles.chartsRow}>
-        {/* Complaint status pie */}
-        <div className="card" style={styles.chartCard}>
-          <h3 style={styles.chartTitle}>📋 Complaint Status Distribution</h3>
-          {complaintChartData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={220}>
-              <PieChart>
-                <Pie
-                  data={complaintChartData}
-                  cx="50%" cy="50%"
-                  innerRadius={55} outerRadius={85}
-                  paddingAngle={4} dataKey="value" labelLine={false}
-                >
-                  {complaintChartData.map((entry, i) => (
-                    <Cell key={i} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(v, name) => [v, name]} />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          ) : (
-            <div style={styles.noData}>No complaint data available.</div>
-          )}
-        </div>
-
-        {/* Room status pie */}
-        <div className="card" style={styles.chartCard}>
+      {/* ===== Charts + Quick Actions Row ===== */}
+      <div style={styles.bottomRow}>
+        {/* Room status pie chart */}
+        <div className="card" style={{ flex: 2 }}>
           <h3 style={styles.chartTitle}>🛏️ Room Occupancy Status</h3>
           {roomChartData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={220}>
+            <ResponsiveContainer width="100%" height={240}>
               <PieChart>
                 <Pie
                   data={roomChartData}
                   cx="50%" cy="50%"
-                  innerRadius={55} outerRadius={85}
+                  innerRadius={60} outerRadius={90}
                   paddingAngle={4} dataKey="value" labelLine={false}
                 >
                   {roomChartData.map((entry, i) => (
@@ -240,73 +171,13 @@ const WardenDashboard = () => {
           )}
         </div>
 
-        {/* Complaint bar chart */}
-        <div className="card" style={styles.chartCard}>
-          <h3 style={styles.chartTitle}>📊 Complaints by Status</h3>
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={barData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="label" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
-              <Tooltip />
-              <Bar dataKey="count" fill="#10b981" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* ===== Recent Pending Complaints + Quick Actions ===== */}
-      <div style={styles.bottomRow}>
-        <div className="card" style={{ flex: 2, padding: 0, overflow: 'hidden' }}>
-          <div style={styles.tableHeader}>
-            <h3 style={styles.chartTitle}>⏳ Recent Pending &amp; In-Progress Complaints</h3>
-          </div>
-          {!d.recentComplaints || d.recentComplaints.length === 0 ? (
-            <div style={styles.noData}>No open complaints. Great job! 🎉</div>
-          ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Title</th>
-                    <th>Student</th>
-                    <th>Room</th>
-                    <th>Category</th>
-                    <th>Priority</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {d.recentComplaints.map((complaint) => (
-                    <tr key={complaint._id}>
-                      <td style={{ fontWeight: 600, maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {complaint.title}
-                      </td>
-                      <td>{complaint.studentId?.name || '—'}</td>
-                      <td>
-                        {complaint.studentId?.roomId?.roomNumber
-                          ? `Room ${complaint.studentId.roomId.roomNumber}`
-                          : '—'}
-                      </td>
-                      <td style={{ textTransform: 'capitalize' }}>{complaint.category || '—'}</td>
-                      <td style={{ textTransform: 'capitalize' }}>{complaint.priority || '—'}</td>
-                      <td><Badge status={complaint.status} /></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-
         {/* Quick Actions */}
         <div className="card" style={{ flex: 1 }}>
           <h3 style={{ ...styles.chartTitle, marginBottom: '16px' }}>⚡ Quick Actions</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <QuickLink icon="📋" label="Manage Complaints"  to="/warden/complaints" color="#1a73e8" />
             <QuickLink icon="🛏️"  label="Update Room Status" to="/warden/rooms"      color="#34a853" />
-            <QuickLink icon="🎓" label="View Students"      to="/warden/students"   color="#8b5cf6" />
-            <QuickLink icon="✅" label="Attendance"         to="/warden/attendance" color="#fbbc04" />
+            <QuickLink icon="🎓" label="View Students"       to="/warden/students"   color="#8b5cf6" />
+            <QuickLink icon="✅" label="Mark Attendance"     to="/warden/attendance" color="#fbbc04" />
           </div>
         </div>
       </div>
@@ -366,12 +237,6 @@ const styles = {
     color: '#1e293b',
     marginBottom: '-8px',
   },
-  chartsRow: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-    gap: '16px',
-  },
-  chartCard: { },
   chartTitle: {
     fontSize: '15px',
     fontWeight: '600',
@@ -389,9 +254,6 @@ const styles = {
     gap: '16px',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
-  },
-  tableHeader: {
-    padding: '16px 20px 8px',
   },
 };
 
