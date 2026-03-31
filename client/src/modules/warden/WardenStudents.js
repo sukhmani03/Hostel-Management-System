@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 import { studentService } from '../../services/api';
 
-// ===== Warden Students Page (read-only) =====
+// ===== Warden Students Page — with attendance quick-action =====
 const WardenStudents = () => {
   const [students, setStudents] = useState([]);
   const [loading, setLoading]   = useState(true);
   const [search, setSearch]     = useState('');
+  const navigate = useNavigate();
 
   const fetchStudents = useCallback(async () => {
     try {
@@ -30,9 +32,18 @@ const WardenStudents = () => {
       {/* Header */}
       <div style={styles.header}>
         <h2 style={styles.pageTitle}>🎓 Students</h2>
-        <span style={{ color: '#64748b', fontSize: '13px' }}>
-          {students.length} student{students.length !== 1 ? 's' : ''}
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ color: '#64748b', fontSize: '13px' }}>
+            {students.length} student{students.length !== 1 ? 's' : ''}
+          </span>
+          <button
+            style={styles.attendanceBtn}
+            onClick={() => navigate('/warden/attendance')}
+            title="Go to the attendance page to mark attendance for all students"
+          >
+            ✅ Mark Attendance
+          </button>
+        </div>
       </div>
 
       {/* Search Bar */}
@@ -63,6 +74,7 @@ const WardenStudents = () => {
                   <th>Phone</th>
                   <th>Course</th>
                   <th>Room</th>
+                  <th>Attendance</th>
                 </tr>
               </thead>
               <tbody>
@@ -87,6 +99,15 @@ const WardenStudents = () => {
                           : `Room ${student.roomId}`)
                         : <span style={{ color: '#94a3b8' }}>Not assigned</span>}
                     </td>
+                    <td>
+                      <button
+                        style={styles.markBtn}
+                        onClick={() => navigate('/warden/attendance')}
+                        title="Mark attendance for today"
+                      >
+                        ✅ Mark
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -109,6 +130,16 @@ const styles = {
     fontSize: '22px',
     fontWeight: '700',
     color: '#1e293b',
+  },
+  attendanceBtn: {
+    padding: '8px 16px',
+    background: '#10b981',
+    color: 'white',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '13px',
+    fontWeight: '600',
+    cursor: 'pointer',
   },
   searchBar: {
     marginBottom: '16px',
@@ -142,6 +173,17 @@ const styles = {
     fontWeight: '700',
     fontSize: '13px',
     flexShrink: 0,
+  },
+  markBtn: {
+    padding: '5px 12px',
+    background: '#f0fdf4',
+    color: '#059669',
+    border: '1px solid #a7f3d0',
+    borderRadius: '6px',
+    fontSize: '12px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap',
   },
 };
 
